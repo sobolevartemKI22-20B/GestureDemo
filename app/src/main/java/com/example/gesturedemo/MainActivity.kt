@@ -35,6 +35,15 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.Canvas
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +61,53 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    PointerInputDrag(modifier)
+    ScrollModifiers(modifier)
 }
+
+@Composable
+fun ScrollModifiers(modifier: Modifier = Modifier) {
+    val image = ImageBitmap.imageResource(id = R.drawable.vacation)
+    Box(modifier = modifier
+        .size(150.dp)
+        .verticalScroll(rememberScrollState())
+        .horizontalScroll(rememberScrollState())) {
+        Canvas(
+            modifier = Modifier
+                .size(360.dp, 270.dp)
+        )
+        {
+            drawImage(
+                image = image,
+                topLeft = Offset(
+                    x = 0f,
+                    y = 0f
+                ),
+            )
+        }
+    }
+}
+
+@Composable
+fun ScrollableModifier(modifier: Modifier = Modifier) {
+    var offset by remember { mutableStateOf(0f) }
+    Box(
+        modifier
+            .fillMaxSize()
+            .scrollable(
+                orientation = Orientation.Vertical,
+                state = rememberScrollableState { distance ->
+                    offset += distance
+                    distance
+                }
+            )
+    ) {
+        Box(modifier = Modifier
+            .size(90.dp)
+            .offset { IntOffset(0, offset.roundToInt()) }
+            .background(Color.Red))
+    }
+}
+
 @Composable
 fun PointerInputDrag(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
