@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.detectDragGestures
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +52,28 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    DragDemo(modifier)
+    PointerInputDrag(modifier)
 }
+@Composable
+fun PointerInputDrag(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
+        var xOffset by remember { mutableStateOf(0f) }
+        var yOffset by remember { mutableStateOf(0f) }
+        Box(
+            Modifier
+                .offset { IntOffset(xOffset.roundToInt(), yOffset.roundToInt()) }
+                .background(Color.Blue)
+                .size(100.dp)
+                .pointerInput(Unit) {
+                    detectDragGestures { _, distance ->
+                        xOffset += distance.x
+                        yOffset += distance.y
+                    }
+                }
+        )
+    }
+}
+
 @Composable
 fun DragDemo(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
